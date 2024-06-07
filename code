@@ -11,7 +11,6 @@ contract AasthaToken {
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Mint(address indexed to, uint256 value);
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
     event Pause();
     event Unpause();
 
@@ -24,17 +23,6 @@ contract AasthaToken {
         paused = false;
     }
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can call this function.");
-        _;
-    }
-
-    modifier whenNotPaused() {
-        require(!paused, "Token transfers are paused.");
-        _;
-    }
-
-   
     function mintTokens(address to, uint256 amount) internal {
         require(to != address(0), "Invalid address");
         totalSupply += amount;
@@ -43,22 +31,37 @@ contract AasthaToken {
         emit Transfer(address(0), to, amount);
     }
 
-    function mint(address to, uint256 amount) public onlyOwner {
+    function mint(address to, uint256 amount) public {
+        require(msg.sender == owner, "Only the owner can call this function.");
         mintTokens(to, amount);
     }
 
-    function burn(uint256 amount) public whenNotPaused {
+    function burn(uint256 amount) public {
+        require(!paused, "Token transfers are paused.");
         require(balanceOf[msg.sender] >= amount, "Insufficient balance");
         balanceOf[msg.sender] -= amount;
         totalSupply -= amount;
         emit Transfer(msg.sender, address(0), amount);
     }
 
-    function transfer(address to, uint256 amount) public whenNotPaused {
+    function transfer(address to, uint256 amount) public {
+        require(!paused, "Token transfers are paused.");
         require(to != address(0), "Invalid address");
         require(balanceOf[msg.sender] >= amount, "Insufficient balance");
         balanceOf[msg.sender] -= amount;
         balanceOf[to] += amount;
         emit Transfer(msg.sender, to, amount);
+    }
+
+    function pause() public {
+        require(msg.sender == owner, "Only the owner can call this function.");
+        paused = true;
+        emit Pause();
+    }
+
+    function unpause() public {
+        require(msg.sender == owner, "Only the owner can call this function.");
+        paused = false;
+        emit Unpause();
     }
 }
