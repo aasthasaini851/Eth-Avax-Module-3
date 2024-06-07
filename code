@@ -23,24 +23,26 @@ contract AasthaToken {
         paused = false;
     }
 
-    function mintTokens(address to, uint256 amount) internal {
+    function _mint(address to, uint256 amount) internal {
         require(to != address(0), "Invalid address");
-        totalSupply += amount;
-        balanceOf[to] += amount;
+        totalSupply = totalSupply + amount;
+        balanceOf[to] = balanceOf[to] + amount;
+
         emit Mint(to, amount);
         emit Transfer(address(0), to, amount);
     }
 
     function mint(address to, uint256 amount) public {
         require(msg.sender == owner, "Only the owner can call this function.");
-        mintTokens(to, amount);
+        _mint(to, amount);
     }
 
     function burn(uint256 amount) public {
         require(!paused, "Token transfers are paused.");
         require(balanceOf[msg.sender] >= amount, "Insufficient balance");
-        balanceOf[msg.sender] -= amount;
-        totalSupply -= amount;
+       balanceOf[msg.sender] = balanceOf[msg.sender] - amount;
+       totalSupply = totalSupply - amount;
+
         emit Transfer(msg.sender, address(0), amount);
     }
 
@@ -48,8 +50,8 @@ contract AasthaToken {
         require(!paused, "Token transfers are paused.");
         require(to != address(0), "Invalid address");
         require(balanceOf[msg.sender] >= amount, "Insufficient balance");
-        balanceOf[msg.sender] -= amount;
-        balanceOf[to] += amount;
+        balanceOf[msg.sender] = balanceOf[msg.sender] - amount;
+        balanceOf[to] = balanceOf[to] + amount;
         emit Transfer(msg.sender, to, amount);
     }
 
