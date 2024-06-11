@@ -1,29 +1,69 @@
-This Token contract is an Ethereum smart contract written in Solidity. It implements a basic ERC20 token with features such as token transfers, token minting, and token burning. Additionally, it includes functionality to pause or unpause the token transfers.
-
+# ERC20 token
 # Overview
-Name: AasthaToken
-Decimals: 1
-Total Supply: 40,000
-Owner: The deployer of the contract
+The AasthaToken smart contract is an ERC-20 compatible token implemented in Solidity. It provides basic functionalities for minting, burning, and transferring tokens. The contract is named "AasthaToken" with the symbol "Abc" and has a fixed initial supply that can be expanded by the owner.
+
 # Features
-Token Metadata: The contract defines the token name, decimals, and total supply.
-Token Balances: The contract keeps track of the token balances of all addresses.
-Events: The contract emits events for token transfers, minting, pause, and unpause actions.
-Token Minting: The owner can mint new tokens and allocate them to any address.
-Token Burning: Token holders can burn their own tokens to reduce the total supply.
-Pause Functionality: The contract includes a pause mechanism to temporarily stop token transfers.
+Token Details: Stores token name, symbol, decimals, and total supply.
+Ownership: Restricts certain functions to be accessible only by the contract owner.
+Minting: Allows the contract owner to mint new tokens.
+Burning: Allows any token holder to burn their tokens.
+Transferring: Allows token holders to transfer tokens to others.
+# Contract Details
+# State Variables
+name: The name of the token (AasthaToken).
+symbol: The symbol of the token (Abc).
+decimals: The number of decimals the token uses (1).
+totalSupply: The total supply of tokens.
+balanceOf: A mapping of addresses to their respective token balances.
+owner: The address of the contract owner.
+# Events
+Transfer: Emitted when tokens are transferred from one address to another.
+Mint: Emitted when new tokens are minted.
+# Constructor
+The constructor initializes the token with the following:
+
+Sets the token name, symbol, and decimals.
+Mints an initial supply of 100 tokens to the contract owner.
+Sets the deployer of the contract as the owner.
+# Modifiers
+onlyOwner: Restricts the execution of certain functions to the contract owner.
 # Functions
-mint: Allows the owner to mint new tokens and assign them to a specified address.
-burn: Allows token holders to burn their own tokens, reducing the total supply.
-transfer: Allows token holders to transfer tokens to other addresses.
-pause: Allows the owner to pause token transfers temporarily.
-unpause: Allows the owner to resume token transfers after pausing.
+mint_Tokens(address To, uint256 Amount) internal
+Mints new tokens and assigns them to the specified address.
+
+# Parameters:
+To: The address to receive the minted tokens.
+Amount: The number of tokens to mint.
+Emits:
+Mint
+# Transfer
+mint(address To, uint256 Amount) public onlyOwner
+Public function that allows the contract owner to mint new tokens.
+
+# Parameters:
+To: The address to receive the minted tokens.
+Amount: The number of tokens to mint.
+# Calls:
+mint_Tokens
+burn(uint256 Amount) public
+Allows token holders to burn a specific amount of their tokens.
+
+# Parameters:
+Amount: The number of tokens to burn.
+Emits:
+Transfer
+transfer(address To, uint256 Amount) public
+Allows token holders to transfer tokens to another address.
+
+Parameters:
+To: The address to receive the tokens.
+Amount: The number of tokens to transfer.
+Emits:
+Transfer
 # Usage
-Deployment: Deploy the contract to an Ethereum-compatible blockchain network.
-Initialization: Upon deployment, the contract initializes with the specified token parameters and initial supply.
-Token Management: The owner can manage the token by minting new tokens, burning tokens, pausing, and unpausing token transfers.
-Token Interaction: Token holders can transfer tokens to other addresses using the transfer function.
-Event Monitoring: Monitor emitted events for token transfers, minting, ownership transfer, pause, and unpause actions.
-# Security Considerations
-Pause Mechanism: Use the pause functionality responsibly to prevent unintended consequences such as frozen tokens.
-Token Burning: Ensure that token burning actions are performed by authorized holders to prevent loss of tokens.
+Deployment: Deploy the contract on the Ethereum blockchain. The deployer will be the initial owner and will receive the initial supply of tokens.
+Minting: The owner can mint additional tokens using the mint function.
+Burning: Any token holder can burn their tokens using the burn function.
+Transferring: Token holders can transfer their tokens to others using the transfer function.
+# License
+This contract is licensed under the MIT License.
