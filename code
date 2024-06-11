@@ -3,67 +3,55 @@ pragma solidity ^0.8.0;
 
 contract AasthaToken {
     string public name;
+    string public symbol;
     uint8 public decimals;
     uint256 public totalSupply;
     mapping(address => uint256) public balanceOf;
     address public owner;
-    bool public paused;
 
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Mint(address indexed to, uint256 value);
-    event Pause();
-    event Unpause();
 
     constructor() {
         name = "AasthaToken";
-        decimals = 1; // Adjusted decimals to 1
-        totalSupply = 40000;
+        symbol = "Abc";
+        decimals = 1;
+        totalSupply = 100 * 10** uint256(decimals);
         balanceOf[msg.sender] = totalSupply;
         owner = msg.sender;
-        paused = false;
+
+        mint_Tokens(msg.sender, 100 * 10**uint256(decimals));
     }
 
-    function _mint(address to, uint256 amount) internal {
-        require(to != address(0), "Invalid address");
-        totalSupply = totalSupply + amount;
-        balanceOf[to] = balanceOf[to] + amount;
-
-        emit Mint(to, amount);
-        emit Transfer(address(0), to, amount);
+    modifier onlyOwner() {
+        require(msg.sender == owner, "The following function can only be accessed by the contract administrator.");
+        _;
     }
 
-    function mint(address to, uint256 amount) public {
-        require(msg.sender == owner, "Only the owner can call this function.");
-        _mint(to, amount);
+    function mint_Tokens(address To, uint256 Amount) internal {
+        require(To != address(0), "Invalid address");
+        totalSupply = totalSupply +  Amount;
+        balanceOf[To] = balanceOf[To] + Amount;
+        emit Mint(To, Amount);
+        emit Transfer(address(0), To, Amount);
     }
 
-    function burn(uint256 amount) public {
-        require(!paused, "Token transfers are paused.");
-        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
-       balanceOf[msg.sender] = balanceOf[msg.sender] - amount;
-       totalSupply = totalSupply - amount;
-
-        emit Transfer(msg.sender, address(0), amount);
+    function mint(address To, uint256 Amount) public onlyOwner {
+        mint_Tokens(To, Amount);
     }
 
-    function transfer(address to, uint256 amount) public {
-        require(!paused, "Token transfers are paused.");
-        require(to != address(0), "Invalid address");
-        require(balanceOf[msg.sender] >= amount, "Insufficient balance");
-        balanceOf[msg.sender] = balanceOf[msg.sender] - amount;
-        balanceOf[to] = balanceOf[to] + amount;
-        emit Transfer(msg.sender, to, amount);
+    function burn(uint256 Amount) public {
+        require(balanceOf[msg.sender] >= Amount, "Insufficient balance");
+        balanceOf[msg.sender] = balanceOf[msg.sender] - Amount;
+        totalSupply = totalSupply - Amount;
+        emit Transfer(msg.sender, address(0), Amount);
     }
 
-    function pause() public {
-        require(msg.sender == owner, "Only the owner can call this function.");
-        paused = true;
-        emit Pause();
-    }
-
-    function unpause() public {
-        require(msg.sender == owner, "Only the owner can call this function.");
-        paused = false;
-        emit Unpause();
+    function transfer(address To, uint256 Amount) public {
+        require(To != address(0), "Invalid address");
+        require(balanceOf[msg.sender] >= Amount, "Insufficient balance");
+        balanceOf[msg.sender] = balanceOf[msg.sender] - Amount;
+        balanceOf[To] = balanceOf[To] + Amount;
+        emit Transfer(msg.sender, To, Amount);
     }
 }
