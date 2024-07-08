@@ -1,57 +1,26 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract AasthaToken {
-    string public name;
-    string public symbol;
-    uint8 public decimals;
-    uint256 public totalSupply;
-    mapping(address => uint256) public balanceOf;
-    address public owner;
-
-    event Transfer(address indexed from, address indexed to, uint256 value);
-    event Mint(address indexed to, uint256 value);
-
-    constructor() {
-        name = "AasthaToken";
-        symbol = "Abc";
-        decimals = 1;
-        totalSupply = 100 * 10** uint256(decimals);
-        balanceOf[msg.sender] = totalSupply;
-        owner = msg.sender;
-
-        mint_Tokens(msg.sender, 100 * 10**uint256(decimals));
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+contract Aastha {
+    string public Name = "Aastha";
+    string public Symbol = "ABC";
+    uint public totalSupply = 0;
+    mapping(address=>uint) public BalanceOf;
+    function mint(address to,uint256 amount) public {
+        totalSupply = totalSupply + amount;
+        BalanceOf[to] = BalanceOf[to] + amount;
     }
+    function burn(address from,uint amount) public {
+    require(BalanceOf[from]>=amount, "Insufficient balance");
+    totalSupply = totalSupply - amount;
+    BalanceOf[from]= BalanceOf[from] - amount;
 
-    modifier onlyOwner() {
-        require(msg.sender == owner, "The following function can only be accessed by the contract administrator.");
-        _;
     }
-
-    function mint_Tokens(address To, uint256 Amount) internal {
-        require(To != address(0), "Invalid address");
-        totalSupply = totalSupply +  Amount;
-        balanceOf[To] = balanceOf[To] + Amount;
-        emit Mint(To, Amount);
-        emit Transfer(address(0), To, Amount);
-    }
-
-    function mint(address To, uint256 Amount) public onlyOwner {
-        mint_Tokens(To, Amount);
-    }
-
-    function burn(uint256 Amount) public {
-        require(balanceOf[msg.sender] >= Amount, "Insufficient balance");
-        balanceOf[msg.sender] = balanceOf[msg.sender] - Amount;
-        totalSupply = totalSupply - Amount;
-        emit Transfer(msg.sender, address(0), Amount);
-    }
-
-    function transfer(address To, uint256 Amount) public {
-        require(To != address(0), "Invalid address");
-        require(balanceOf[msg.sender] >= Amount, "Insufficient balance");
-        balanceOf[msg.sender] = balanceOf[msg.sender] - Amount;
-        balanceOf[To] = balanceOf[To] + Amount;
-        emit Transfer(msg.sender, To, Amount);
+    function transfer(address from, address receiver , uint256 amount) public {
+        require(BalanceOf[from]>=amount, "Insufficient balance");
+        BalanceOf[from] = BalanceOf[from] - amount;
+        BalanceOf[receiver] = BalanceOf[receiver] + amount;
+        totalSupply = totalSupply - amount;
     }
 }
